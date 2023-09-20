@@ -603,7 +603,8 @@ export class Authenticator {
     const { request } = event.Records[0].cf;
     const requestParams = parse(request.querystring);
     const cfDomain = request.headers.host[0].value;
-    const redirectURI = `https://${cfDomain}`;
+    const uriPath = request.uri
+    const redirectURI = (uriPath === "/") ? `https://${cfDomain}` : `https://${cfDomain}${uriPath}`;
 
     try {
       const tokens = this._getTokensFromCookie(request.headers.cookie);
@@ -658,7 +659,8 @@ export class Authenticator {
     const { request } = event.Records[0].cf;
     const requestParams = parse(request.querystring);
     const cfDomain = request.headers.host[0].value;
-    const redirectURI = requestParams.redirect_uri as string || `https://${cfDomain}`;
+    const uriPath = request.uri
+    const redirectURI = (uriPath === "/") ? `https://${cfDomain}` : `https://${cfDomain}${uriPath}`;
 
     try {
       const tokens = this._getTokensFromCookie(request.headers.cookie);
@@ -704,7 +706,8 @@ export class Authenticator {
       if (!this._parseAuthPath) {
         throw new Error('parseAuthPath is not set');
       }
-      const redirectURI = `https://${cfDomain}/${this._parseAuthPath}`;
+      const uriPath = request.uri
+      const redirectURI = (uriPath === "/") ? `https://${cfDomain}` : `https://${cfDomain}${uriPath}`;
       if (requestParams.code) {
         if (this._csrfProtection) {
           this._validateCSRFCookies(request);
@@ -741,8 +744,8 @@ export class Authenticator {
     const { request } = event.Records[0].cf;
     const cfDomain = request.headers.host[0].value;
     const requestParams = parse(request.querystring);
-    const redirectURI = requestParams.redirect_uri as string || `https://${cfDomain}`;
-
+    const uriPath = request.uri
+    const redirectURI = (uriPath === "/") ? `https://${cfDomain}` : `https://${cfDomain}${uriPath}`;
     try {
       let tokens = this._getTokensFromCookie(request.headers.cookie);
 
